@@ -3,7 +3,7 @@
 %global base_version 3.62
 Name:           %{?scl_prefix}perl-PathTools
 Version:        3.63
-Release:        366%{?dist}
+Release:        367%{?dist}
 Summary:        PathTools Perl module (Cwd, File::Spec)
 License:        (GPL+ or Artistic) and BSD
 Group:          Development/Libraries
@@ -13,6 +13,8 @@ Source0:        http://www.cpan.org/authors/id/R/RJ/RJBS/PathTools-%{base_versio
 Patch0:         PathTools-3.47-Disable-VMS-tests.patch
 # Unbundled from perl 5.24.0
 Patch1:         PathTools-3.62-Upgrade-to-3.63.patch
+# Avoid loading optional modules from default . (CVE-2016-1238)
+Patch2:         PathTools-3.63-CVE-2016-1238-avoid-loading-optional-modules-from.patch
 BuildRequires:  coreutils
 BuildRequires:  findutils
 BuildRequires:  gcc
@@ -50,6 +52,7 @@ This is the combined distribution for the File::Spec and Cwd modules.
 %setup -q -n PathTools-%{base_version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 # Do not distribute File::Spec::VMS as it works on VMS only (bug #973713)
 rm lib/File/Spec/VMS.pm
@@ -79,6 +82,9 @@ find $RPM_BUILD_ROOT -type f -name '*.bs' -size 0 -exec rm -f {} \;
 %{_mandir}/man3/*
 
 %changelog
+* Wed Aug 03 2016 Jitka Plesnikova <jplesnik@redhat.com> - 3.63-367
+- Avoid loading optional modules from default . (CVE-2016-1238)
+
 * Mon Jul 11 2016 Petr Pisar <ppisar@redhat.com> - 3.63-366
 - SCL
 
