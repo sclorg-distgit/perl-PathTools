@@ -1,0 +1,204 @@
+diff --git a/Cwd.pm b/Cwd.pm
+index 9b5183e..e8b9f19 100644
+--- a/Cwd.pm
++++ b/Cwd.pm
+@@ -3,7 +3,7 @@ use strict;
+ use Exporter;
+ use vars qw(@ISA @EXPORT @EXPORT_OK $VERSION);
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ my $xs_version = $VERSION;
+ $VERSION =~ tr/_//d;
+ 
+diff --git a/lib/File/Spec.pm b/lib/File/Spec.pm
+index 2709c39..32b987e 100644
+--- a/lib/File/Spec.pm
++++ b/lib/File/Spec.pm
+@@ -3,7 +3,7 @@ package File::Spec;
+ use strict;
+ use vars qw(@ISA $VERSION);
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ my %module = (MacOS   => 'Mac',
+diff --git a/lib/File/Spec/AmigaOS.pm b/lib/File/Spec/AmigaOS.pm
+index e6d6f5f2a..7a5889c 100644
+--- a/lib/File/Spec/AmigaOS.pm
++++ b/lib/File/Spec/AmigaOS.pm
+@@ -4,7 +4,7 @@ use strict;
+ use vars qw(@ISA $VERSION);
+ require File::Spec::Unix;
+ 
+-$VERSION = '3.62';
++$VERSION = '3.64';
+ $VERSION =~ tr/_//d;
+ 
+ @ISA = qw(File::Spec::Unix);
+@@ -15,7 +15,8 @@ File::Spec::AmigaOS - File::Spec for AmigaOS
+ 
+ =head1 SYNOPSIS
+ 
+- require File::Spec::AmigaOS; # Done automatically by File::Spec if needed
++ require File::Spec::AmigaOS; # Done automatically by File::Spec
++                              # if needed
+ 
+ =head1 DESCRIPTION
+ 
+diff --git a/lib/File/Spec/Cygwin.pm b/lib/File/Spec/Cygwin.pm
+index 67f056f..2092eb8 100644
+--- a/lib/File/Spec/Cygwin.pm
++++ b/lib/File/Spec/Cygwin.pm
+@@ -4,7 +4,7 @@ use strict;
+ use vars qw(@ISA $VERSION);
+ require File::Spec::Unix;
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ @ISA = qw(File::Spec::Unix);
+diff --git a/lib/File/Spec/Epoc.pm b/lib/File/Spec/Epoc.pm
+index 17e3f54..22f0192 100644
+--- a/lib/File/Spec/Epoc.pm
++++ b/lib/File/Spec/Epoc.pm
+@@ -3,7 +3,7 @@ package File::Spec::Epoc;
+ use strict;
+ use vars qw($VERSION @ISA);
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ require File::Spec::Unix;
+diff --git a/lib/File/Spec/Functions.pm b/lib/File/Spec/Functions.pm
+index 470c771..af2c498 100644
+--- a/lib/File/Spec/Functions.pm
++++ b/lib/File/Spec/Functions.pm
+@@ -5,7 +5,7 @@ use strict;
+ 
+ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION);
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ require Exporter;
+diff --git a/lib/File/Spec/Mac.pm b/lib/File/Spec/Mac.pm
+index 329451f..52c3bfe 100644
+--- a/lib/File/Spec/Mac.pm
++++ b/lib/File/Spec/Mac.pm
+@@ -4,7 +4,7 @@ use strict;
+ use vars qw(@ISA $VERSION);
+ require File::Spec::Unix;
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ @ISA = qw(File::Spec::Unix);
+diff --git a/lib/File/Spec/OS2.pm b/lib/File/Spec/OS2.pm
+index 55e6d33..804ecdb 100644
+--- a/lib/File/Spec/OS2.pm
++++ b/lib/File/Spec/OS2.pm
+@@ -4,7 +4,7 @@ use strict;
+ use vars qw(@ISA $VERSION);
+ require File::Spec::Unix;
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ @ISA = qw(File::Spec::Unix);
+diff --git a/lib/File/Spec/Unix.pm b/lib/File/Spec/Unix.pm
+index 586e9b0..3916a11 100644
+--- a/lib/File/Spec/Unix.pm
++++ b/lib/File/Spec/Unix.pm
+@@ -3,7 +3,7 @@ package File::Spec::Unix;
+ use strict;
+ use vars qw($VERSION);
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ my $xs_version = $VERSION;
+ $VERSION =~ tr/_//d;
+ 
+diff --git a/lib/File/Spec/VMS.pm b/lib/File/Spec/VMS.pm
+index 600c49f..02cc0b0 100644
+--- a/lib/File/Spec/VMS.pm
++++ b/lib/File/Spec/VMS.pm
+@@ -4,7 +4,7 @@ use strict;
+ use vars qw(@ISA $VERSION);
+ require File::Spec::Unix;
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ @ISA = qw(File::Spec::Unix);
+@@ -437,15 +437,13 @@ Attempt to convert an absolute file specification to a relative specification.
+ 
+ sub abs2rel {
+     my $self = shift;
+-    return vmspath(File::Spec::Unix::abs2rel( $self, @_ ))
+-        if ((grep m{/}, @_) && !(grep m{(?<!\^)[\[<:]}, @_));
+-
+     my($path,$base) = @_;
++
+     $base = $self->_cwd() unless defined $base and length $base;
+ 
+     # If there is no device or directory syntax on $base, make sure it
+     # is treated as a directory.
+-    $base = VMS::Filespec::vmspath($base) unless $base =~ m{(?<!\^)[\[<:]};
++    $base = vmspath($base) unless $base =~ m{(?<!\^)[\[<:]};
+ 
+     for ($path, $base) { $_ = $self->rel2abs($_) }
+ 
+@@ -461,7 +459,7 @@ sub abs2rel {
+     
+     my ($path_volume, $path_directories, $path_file) = $self->splitpath($path);
+     my ($base_volume, $base_directories, $base_file) = $self->splitpath($base);
+-    return $path unless lc($path_volume) eq lc($base_volume);
++    return $self->canonpath( $path ) unless lc($path_volume) eq lc($base_volume);
+ 
+     # Now, remove all leading components that are the same
+     my @pathchunks = $self->splitdir( $path_directories );
+diff --git a/lib/File/Spec/Win32.pm b/lib/File/Spec/Win32.pm
+index 6df7ee8..1105b67 100644
+--- a/lib/File/Spec/Win32.pm
++++ b/lib/File/Spec/Win32.pm
+@@ -5,7 +5,7 @@ use strict;
+ use vars qw(@ISA $VERSION);
+ require File::Spec::Unix;
+ 
+-$VERSION = '3.62';
++$VERSION = '3.63';
+ $VERSION =~ tr/_//d;
+ 
+ @ISA = qw(File::Spec::Unix);
+diff --git a/t/abs2rel.t b/t/abs2rel.t
+index 5e33ab6..b77a1c2 100644
+--- a/t/abs2rel.t
++++ b/t/abs2rel.t
+@@ -6,7 +6,7 @@ use Test::More;
+ use Cwd qw(cwd getcwd abs_path);
+ use File::Spec();
+ use File::Temp qw(tempdir);
+-use File::Path qw(make_path);
++use File::Path qw(mkpath);
+ 
+ my $startdir = cwd();
+ my @files = ( 'anyfile', './anyfile', '../first_sub_dir/anyfile', '../second_sub_dir/second_file' );
+@@ -25,8 +25,8 @@ sub test_rel2abs {
+         File::Spec->catdir('first_sub_dir',  'sub_sub_dir'),
+         'second_sub_dir'
+     );
+-    make_path(@subdirs, { mode => 0711 })
+-        or die "Unable to make_path: $!";
++    mkpath(@subdirs, { mode => 0711 })
++        or die "Unable to mkpath: $!";
+ 
+     open my $OUT2, '>',
+         File::Spec->catfile('second_sub_dir', 'second_file')
